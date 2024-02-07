@@ -1,6 +1,8 @@
 package routing
 
 import (
+	"blog/internal/providers/routes"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,4 +12,8 @@ func Init() {
 
 func GetRouter() *gin.Engine {
 	return router
+}
+
+func RegisterRoutes() {
+	routes.RegisterRoutes(GetRouter())
 }
