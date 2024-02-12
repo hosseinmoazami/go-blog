@@ -1,7 +1,7 @@
 package repositories
 
-import articleModel "blog/internal/modules/article/models"
+import ArticleModel "blog/internal/modules/article/models"
 
 type ArticleRepositoryInterface interface {
-	List(limit int) []articleModel.Article
+	List(limit int) []ArticleModel.Article
 }

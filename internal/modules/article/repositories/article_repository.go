@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	articleModel "blog/internal/modules/article/models"
+	ArticleModel "blog/internal/modules/article/models"
 	"blog/pkg/database"
 
 	"gorm.io/gorm"
@@ -17,8 +17,8 @@ func New() *ArticleRepository {
 	}
 }
 
-func (articleRepository *ArticleRepository) List(limit int) []articleModel.Article {
-	var articles []articleModel.Article
+func (articleRepository *ArticleRepository) List(limit int) []ArticleModel.Article {
+	var articles []ArticleModel.Article
 	articleRepository.DB.Limit(limit).Joins("User").Order("rand()").Find(&articles)
 	return articles
 }
