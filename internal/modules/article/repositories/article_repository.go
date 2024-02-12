@@ -17,6 +17,12 @@ func New() *ArticleRepository {
 	}
 }
 
+func (articleRepository *ArticleRepository) Item(ID int) ArticleModel.Article {
+	var article ArticleModel.Article
+	articleRepository.DB.Joins("User").First(&article, ID)
+	return article
+}
+
 func (articleRepository *ArticleRepository) List(limit int) []ArticleModel.Article {
 	var articles []ArticleModel.Article
 	articleRepository.DB.Limit(limit).Joins("User").Order("rand()").Find(&articles)
