@@ -1,0 +1,28 @@
+{{ define "templates/errors/html/404" }}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>market-wp.com</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link href="/assets/css/notFound.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div id='oopss'>
+        <div id='error-text'>
+            <img src="https://cdn.rawgit.com/ahmedhosna95/upload/1731955f/sad404.svg" alt="{{.title}}">
+            <h2>{{.title}} PAGE</h2>
+            <h5 class="p-a">{{.message}}</h5>
+        </div>
+    </div>
+</body>
+
+</html>
+
+{{ end }}
