@@ -3,6 +3,7 @@ package controllers
 import (
 	"blog/internal/modules/user/requests/auth"
 	UserServices "blog/internal/modules/user/services"
+	"blog/pkg/errors"
 	"blog/pkg/html"
 	"log"
 	"net/http"
@@ -36,7 +37,9 @@ func (controller *Controller) RegisterHandle(c *gin.Context) {
 	var registerRequest auth.RegisterRequest
 	// This will infer what binder to use depending on the content-type header.
 	if err := c.ShouldBind(&registerRequest); err != nil {
-		c.Redirect(http.StatusFound, "/register")
+		errors.Init()
+		errors.SetFromErrors(err)
+		c.JSON(http.StatusOK, gin.H{"errors": errors.Get()})
 		return
 	}
 
