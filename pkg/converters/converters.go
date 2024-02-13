@@ -16,3 +16,16 @@ func StringToMap(stringData string) map[string]string {
 
 	return output
 }
+
+func UrlValuesToString(mapData map[string][]string) string {
+	str, _ := json.Marshal(mapData)
+
+	return string(str)
+}
+
+func StringToUrlValues(stringData string) map[string][]string {
+	var output map[string][]string
+	_ = json.Unmarshal([]byte(stringData), &output)
+
+	return output
+}

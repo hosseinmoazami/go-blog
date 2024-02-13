@@ -6,6 +6,7 @@ import (
 	"blog/pkg/converters"
 	"blog/pkg/errors"
 	"blog/pkg/html"
+	"blog/pkg/keepFormData"
 	"blog/pkg/sessions"
 	"log"
 	"net/http"
@@ -43,6 +44,11 @@ func (controller *Controller) RegisterHandle(c *gin.Context) {
 		errors.SetFromErrors(err)
 
 		sessions.Set(c, "errors", converters.MapToString(errors.Get()))
+
+		keepFormData.Init()
+		keepFormData.SetFromData(c)
+
+		sessions.Set(c, "formData", converters.UrlValuesToString(keepFormData.Get()))
 
 		c.Redirect(http.StatusFound, "/register")
 		return
