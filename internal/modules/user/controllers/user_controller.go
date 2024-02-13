@@ -10,6 +10,7 @@ import (
 	"blog/pkg/sessions"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -42,12 +43,10 @@ func (controller *Controller) RegisterHandle(c *gin.Context) {
 	if err := c.ShouldBind(&registerRequest); err != nil {
 		errors.Init()
 		errors.SetFromErrors(err)
-
 		sessions.Set(c, "errors", converters.MapToString(errors.Get()))
 
 		keepFormData.Init()
 		keepFormData.SetFromData(c)
-
 		sessions.Set(c, "formData", converters.UrlValuesToString(keepFormData.Get()))
 
 		c.Redirect(http.StatusFound, "/register")
@@ -55,15 +54,35 @@ func (controller *Controller) RegisterHandle(c *gin.Context) {
 	}
 
 	// create the user
-	user, err := controller.userService.Create(registerRequest)
+	email := c.Request.PostForm.Get("email")
+	userExist := controller.userService.CheckUserExist(email)
 
-	// check if there is any error on the user creation
-	if err != nil {
+	if userExist {
+		errors.Init()
+		errors.Add("Email", "Email address already exists")
+		sessions.Set(c, "errors", converters.MapToString(errors.Get()))
+
+		keepFormData.Init()
+		keepFormData.SetFromData(c)
+		sessions.Set(c, "formData", converters.UrlValuesToString(keepFormData.Get()))
+
+		c.Redirect(http.StatusFound, "/register")
 		c.Redirect(http.StatusFound, "/register")
 		return
-	}
 
-	// after creating the user > redirect user to home page
-	log.Printf("The user created successfully with the name: %s", user.Name)
-	c.Redirect(http.StatusFound, "/")
+	} else {
+		user, err := controller.userService.Create(registerRequest)
+
+		// check if there is any error on the user creation
+		if err != nil {
+			c.Redirect(http.StatusFound, "/register")
+			return
+		}
+
+		sessions.Set(c, "auth", strconv.Itoa(int(user.ID)))
+
+		// after creating the user > redirect user to home page
+		log.Printf("The user created successfully with the name: %s", user.Name)
+		c.Redirect(http.StatusFound, "/")
+	}
 }

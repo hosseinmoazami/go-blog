@@ -1,8 +1,6 @@
 package keepFormData
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,6 +17,5 @@ func SetFromData(c *gin.Context) {
 }
 
 func Get() map[string][]string {
-	fmt.Println("*******dataList********", dataList)
 	return dataList
 }
