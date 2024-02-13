@@ -12,6 +12,17 @@ func Set(c *gin.Context, key string, value string) {
 	session.Save()
 }
 
+func Get(c *gin.Context, key string) string {
+	session := sessions.Default(c)
+
+	response := session.Get(key)
+	if response == nil {
+		return ""
+	}
+
+	return response.(string)
+}
+
 func Flash(c *gin.Context, key string) string {
 	session := sessions.Default(c)
 
