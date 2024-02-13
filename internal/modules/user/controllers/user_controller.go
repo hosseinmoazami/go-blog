@@ -2,13 +2,17 @@ package controllers
 
 import (
 	"blog/internal/modules/user/requests/auth"
+	UserServices "blog/internal/modules/user/services"
 	"blog/pkg/html"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-type Controller struct{}
+type Controller struct {
+	userService UserServices.UserServiceInterface
+}
 type User struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
@@ -16,7 +20,9 @@ type User struct {
 }
 
 func New() *Controller {
-	return &Controller{}
+	return &Controller{
+		userService: UserServices.New(),
+	}
 }
 
 func (controller *Controller) Register(c *gin.Context) {
@@ -35,13 +41,15 @@ func (controller *Controller) RegisterHandle(c *gin.Context) {
 	}
 
 	// create the user
+	user, err := controller.userService.Create(registerRequest)
 
 	// check if there is any error on the user creation
+	if err != nil {
+		c.Redirect(http.StatusFound, "/register")
+		return
+	}
 
 	// after creating the user > redirect user to home page
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Register Handle",
-		"user":    registerRequest,
-	})
+	log.Printf("The user created successfully with the name: %s", user.Name)
+	c.Redirect(http.StatusFound, "/")
 }
