@@ -51,7 +51,7 @@ func (userService *UserService) HandleUserLogin(request auth.LoginRequest) (User
 
 	user := userService.userRepository.FindByEmail(request.Email)
 
-	if user.ID != 0 {
+	if user.ID == 0 {
 		return response, errors.New("invalid credentials")
 	}
 
