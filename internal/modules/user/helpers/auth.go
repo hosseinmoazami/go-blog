@@ -1,4 +1,4 @@
-package handler
+package helpers
 
 import (
 	UserRepository "blog/internal/modules/user/repositories"

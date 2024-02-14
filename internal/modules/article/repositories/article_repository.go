@@ -28,3 +28,9 @@ func (articleRepository *ArticleRepository) List(limit int) []ArticleModel.Artic
 	articleRepository.DB.Limit(limit).Joins("User").Order("rand()").Find(&articles)
 	return articles
 }
+
+func (articleRepository *ArticleRepository) Create(article ArticleModel.Article) ArticleModel.Article {
+	var newArticle ArticleModel.Article
+	articleRepository.DB.Create(&article).Scan(&newArticle)
+	return newArticle
+}

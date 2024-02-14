@@ -1,8 +1,16 @@
 package controllers
 
 import (
+	"blog/internal/modules/article/requests/articles"
 	ArticleService "blog/internal/modules/article/services"
+	"blog/internal/modules/user/helpers"
+	"blog/pkg/converters"
+	"blog/pkg/errors"
 	"blog/pkg/html"
+	"blog/pkg/keepFormData"
+	"blog/pkg/sessions"
+	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -53,5 +61,39 @@ func (controller *Controller) Show(c *gin.Context) {
 }
 
 func (controller *Controller) Create(c *gin.Context) {
-	c.JSON(http.StatusFound, gin.H{"title": "Create Article"})
+	html.Render(c, http.StatusOK, "modules/article/html/create", gin.H{
+		"title": "Create Article Page",
+	})
+}
+
+func (controller *Controller) CreateHandle(c *gin.Context) {
+	var request articles.CreateRequest
+
+	if err := c.ShouldBind(&request); err != nil {
+		errors.Init()
+		errors.SetFromErrors(err)
+		sessions.Set(c, "errors", converters.MapToString(errors.Get()))
+
+		keepFormData.Init()
+		keepFormData.SetFromData(c)
+		sessions.Set(c, "formData", converters.UrlValuesToString(keepFormData.Get()))
+
+		c.Redirect(http.StatusFound, "/articles/create")
+		return
+	}
+
+	user := helpers.Auth(c)
+	article, err := controller.articleService.CreateArticle(request, user)
+
+	if err != nil {
+		errors.Init()
+		errors.SetFromErrors(err)
+		sessions.Set(c, "errors", converters.MapToString(errors.Get()))
+
+		c.Redirect(http.StatusFound, "/articles/create")
+		return
+	}
+
+	log.Printf("The Article \"%s\" created successfully\n", article.Title)
+	c.Redirect(http.StatusFound, fmt.Sprintf("/articles/%d", article.ID))
 }
