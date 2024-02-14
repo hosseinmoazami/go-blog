@@ -32,15 +32,13 @@ func New() *Controller {
 
 func (controller *Controller) Register(c *gin.Context) {
 	html.Render(c, http.StatusOK, "modules/user/html/register", gin.H{
-		"message": "Register Page",
+		"title": "Register Page",
 	})
 }
 
 func (controller *Controller) RegisterHandle(c *gin.Context) {
-	// validate the request
-	var registerRequest auth.RegisterRequest
-	// This will infer what binder to use depending on the content-type header.
-	if err := c.ShouldBind(&registerRequest); err != nil {
+	var request auth.RegisterRequest
+	if err := c.ShouldBind(&request); err != nil {
 		errors.Init()
 		errors.SetFromErrors(err)
 		sessions.Set(c, "errors", converters.MapToString(errors.Get()))
@@ -53,7 +51,6 @@ func (controller *Controller) RegisterHandle(c *gin.Context) {
 		return
 	}
 
-	// create the user
 	email := c.Request.PostForm.Get("email")
 	userExist := controller.userService.CheckUserExist(email)
 
@@ -70,19 +67,54 @@ func (controller *Controller) RegisterHandle(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/register")
 		return
 
-	} else {
-		user, err := controller.userService.Create(registerRequest)
-
-		// check if there is any error on the user creation
-		if err != nil {
-			c.Redirect(http.StatusFound, "/register")
-			return
-		}
-
-		sessions.Set(c, "auth", strconv.Itoa(int(user.ID)))
-
-		// after creating the user > redirect user to home page
-		log.Printf("The user created successfully with the name: %s", user.Name)
-		c.Redirect(http.StatusFound, "/")
 	}
+
+	user, err := controller.userService.Create(request)
+	if err != nil {
+		c.Redirect(http.StatusFound, "/register")
+		return
+	}
+
+	sessions.Set(c, "auth", strconv.Itoa(int(user.ID)))
+	log.Printf("The user created successfully with the name: %s", user.Name)
+	c.Redirect(http.StatusFound, "/")
+
+}
+
+func (controller *Controller) Login(c *gin.Context) {
+	html.Render(c, http.StatusOK, "modules/user/html/login", gin.H{
+		"title": "Login Page",
+	})
+}
+
+func (controller *Controller) LoginHandle(c *gin.Context) {
+	var request auth.LoginRequest
+
+	if err := c.ShouldBind(&request); err != nil {
+		errors.Init()
+		errors.SetFromErrors(err)
+		sessions.Set(c, "errors", converters.MapToString(errors.Get()))
+
+		keepFormData.Init()
+		keepFormData.SetFromData(c)
+		sessions.Set(c, "formData", converters.UrlValuesToString(keepFormData.Get()))
+
+		c.Redirect(http.StatusFound, "/login")
+		return
+	}
+
+	user, err := controller.userService.HandleUserLogin(request)
+
+	if err != nil {
+		errors.Init()
+		errors.Add("email", err.Error())
+		sessions.Set(c, "errors", converters.MapToString(errors.Get()))
+
+		c.Redirect(http.StatusFound, "/login")
+		return
+	}
+
+	sessions.Set(c, "auth", strconv.Itoa(int(user.ID)))
+	log.Printf("The user logged in successfully with the name: %s", user.Name)
+	c.Redirect(http.StatusFound, "/")
 }

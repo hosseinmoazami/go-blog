@@ -45,3 +45,20 @@ func (userService *UserService) CheckUserExist(email string) bool {
 	user := userService.userRepository.FindByEmail(email)
 	return user.ID != 0
 }
+
+func (userService *UserService) HandleUserLogin(request auth.LoginRequest) (UserResponse.User, error) {
+	var response UserResponse.User
+
+	user := userService.userRepository.FindByEmail(request.Email)
+
+	if user.ID != 0 {
+		return response, errors.New("invalid credentials")
+	}
+
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
+	if err != nil {
+		return response, errors.New("invalid credentials")
+	}
+
+	return UserResponse.ToUser(user), nil
+}
