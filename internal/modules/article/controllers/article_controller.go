@@ -51,3 +51,7 @@ func (controller *Controller) Show(c *gin.Context) {
 		"article": article,
 	})
 }
+
+func (controller *Controller) Create(c *gin.Context) {
+	c.JSON(http.StatusFound, gin.H{"title": "Create Article"})
+}
