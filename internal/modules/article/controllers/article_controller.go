@@ -3,7 +3,8 @@ package controllers
 import (
 	"blog/internal/modules/article/requests/articles"
 	ArticleService "blog/internal/modules/article/services"
-	"blog/internal/modules/user/helpers"
+	UserHelpers "blog/internal/modules/user/helpers"
+	ProviderHelpers "blog/internal/providers/helpers"
 	"blog/pkg/converters"
 	"blog/pkg/errors"
 	"blog/pkg/html"
@@ -70,6 +71,8 @@ func (controller *Controller) CreateHandle(c *gin.Context) {
 	var request articles.CreateRequest
 
 	if err := c.ShouldBind(&request); err != nil {
+		fmt.Println("************************", err.Error(), "****************")
+
 		errors.Init()
 		errors.SetFromErrors(err)
 		sessions.Set(c, "errors", converters.MapToString(errors.Get()))
@@ -82,8 +85,23 @@ func (controller *Controller) CreateHandle(c *gin.Context) {
 		return
 	}
 
-	user := helpers.Auth(c)
-	article, err := controller.articleService.CreateArticle(request, user)
+	imgName, err := ProviderHelpers.SaveUploadFile(c, "assets/img/demopic/")
+
+	if err != nil {
+		errors.Init()
+		errors.SetFromErrors(err)
+		sessions.Set(c, "errors", converters.MapToString(errors.Get()))
+
+		keepFormData.Init()
+		keepFormData.SetFromData(c)
+		sessions.Set(c, "formData", converters.UrlValuesToString(keepFormData.Get()))
+
+		c.Redirect(http.StatusFound, "/articles/create")
+		return
+	}
+
+	user := UserHelpers.Auth(c)
+	article, err := controller.articleService.CreateArticle(request, user, imgName)
 
 	if err != nil {
 		errors.Init()

@@ -3,7 +3,8 @@ app:
 
 server:
   host: "localhost"
-  port: "8080"
+  port: "8081"
+  MemoryLimitForMultipartForm: 8
 
 db:
   username: "root"

@@ -7,7 +7,7 @@ import (
 )
 
 type ArticleServiceInterface interface {
-	CreateArticle(request articles.CreateRequest, user UserResponse.User) (ArticleResponse.Article, error)
+	CreateArticle(request articles.CreateRequest, user UserResponse.User, imgName string) (ArticleResponse.Article, error)
 	GetFeaturedArticles() ArticleResponse.Articles
 	GetStoriesArticles() ArticleResponse.Articles
 	GetSingleArticle(ID int) (ArticleResponse.Article, error)

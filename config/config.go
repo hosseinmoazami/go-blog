@@ -11,8 +11,9 @@ type App struct {
 }
 
 type Server struct {
-	Host string
-	Port string
+	Host                        string
+	Port                        string
+	MemoryLimitForMultipartForm int64
 }
 
 type DB struct {

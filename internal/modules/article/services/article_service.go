@@ -19,10 +19,11 @@ func New() *ArticleService {
 	}
 }
 
-func (articleService *ArticleService) CreateArticle(request articles.CreateRequest, user UserResponse.User) (ArticleResponse.Article, error) {
+func (articleService *ArticleService) CreateArticle(request articles.CreateRequest, user UserResponse.User, imgName string) (ArticleResponse.Article, error) {
 	var response ArticleResponse.Article
 	var article ArticleModel.Article
 
+	article.Image = imgName
 	article.Title = request.Title
 	article.Content = request.Content
 	article.UserID = user.ID
