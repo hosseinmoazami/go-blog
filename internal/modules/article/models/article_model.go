@@ -10,6 +10,7 @@ type Article struct {
 	gorm.Model
 	Title   string `gorm:"varchar:191"`
 	Content string `gorm:"text"`
+	Image   string `gorm:"varchar:500"`
 	UserID  uint
 	User    models.User
 }

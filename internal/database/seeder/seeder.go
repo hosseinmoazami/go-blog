@@ -6,6 +6,7 @@ import (
 	"blog/pkg/database"
 	"fmt"
 	"log"
+	"math/rand"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -22,7 +23,7 @@ func Seed() {
 	log.Printf("User created successfully with email %s \n", user.Email)
 
 	for i := 0; i < 10; i++ {
-		article := articleModel.Article{Title: fmt.Sprintf("Title %d", i), Content: fmt.Sprintf("Content %d", i), UserID: 1}
+		article := articleModel.Article{Title: fmt.Sprintf("Title %d", i), Content: fmt.Sprintf("Content %d", i), Image: fmt.Sprintf("/assets/img/demopic/%d.jpg", (rand.Intn(11) + 1)), UserID: 1}
 		db.Create(&article)
 
 		log.Printf("Article created successfully with title %s \n", article.Title)
