@@ -71,8 +71,6 @@ func (controller *Controller) CreateHandle(c *gin.Context) {
 	var request articles.CreateRequest
 
 	if err := c.ShouldBind(&request); err != nil {
-		fmt.Println("************************", err.Error(), "****************")
-
 		errors.Init()
 		errors.SetFromErrors(err)
 		sessions.Set(c, "errors", converters.MapToString(errors.Get()))

@@ -23,7 +23,7 @@ func (articleService *ArticleService) CreateArticle(request articles.CreateReque
 	var response ArticleResponse.Article
 	var article ArticleModel.Article
 
-	article.Image = imgName
+	article.Image = "/assets/img/demopic/" + imgName
 	article.Title = request.Title
 	article.Content = request.Content
 	article.UserID = user.ID
